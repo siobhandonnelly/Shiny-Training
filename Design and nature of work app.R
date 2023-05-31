@@ -17,13 +17,14 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),
-      actionButton("update", "Update"),
+      actionButton("update", "Update") ,
       selectInput("Year", "Acedemic Year", choices = unique(nature_of_work$f_zcohort)),
       actionButton("update", "Update")
       ),
     mainPanel(
       plotlyOutput("chart1"),
-      plotlyOutput("chart2")
+      plotlyOutput("chart2"),
+      plotlyOutput("chart3")
     )
   )
 )
@@ -115,7 +116,8 @@ server <- function(input, output) {
       y = ~ mean_danow,
       color = ~ f_xwrk2020soc1,
       type = "bar",
-      showlegend = FALSE
+      showlegend = FALSE,
+      marker = list(color = '#1F4388')
     ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
@@ -137,13 +139,36 @@ server <- function(input, output) {
       y = ~ mean_danow,
       color = ~ f_xwrk2007sic1,
       type = "bar",
-      showlegend = FALSE
+      showlegend = FALSE,
+      marker = list(color = '#1F4388')
     ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
         xaxis = list(title = 'SIC Group',tickvals = list("Agriculture, forestry and fishing", "Mining and quarrying", "Manufacturing", "Electricity, gas, steam and air conditioning supply" , "Water supply; sewerage, waste management and remediation activities", "Construction" , "Wholesale and retail trade; repair of motor vehicles and motorcycles" , "Transportation and storage", "Accommodation and food service activities" , "Information and communication" , "Financial and insurance activities", "Real estate activities", "Professional, scientific and technical activities", "Administrative and support service activities", "Public administration and defence; compulsory social security", "Education", "Human health and social work activities", "Arts, entertainment and recreation", "Other service activities", "Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use", "Activities of extraterritorial organisations and bodies")),
         title = "Mean Fairwork score by graduates SIC major group"
       ) %>%
+      hide_colorbar() %>%
+      suppressWarnings()
+  })
+  
+  output$chart3 <- renderPlotly({
+    ndf_f_empbasis <- filtered_data() %>%
+      group_by( f_xempbasis) %>%
+      summarise(mean_danow = mean(danow, na.rm = TRUE))
+    
+    plot_ly(
+      data = ndf_f_empbasis,
+      x = ~ f_xempbasis,
+      y = ~ mean_danow,
+      color = ~ f_xempbasis,
+      type = "bar",
+      showlegend = FALSE,
+      marker = list(color = '#1F4388')
+    ) %>%
+      layout(
+        yaxis = list(title = 'Mean Fairwork score'),
+        xaxis = list(title = 'Employment Basis',tickvals = list("On a permanent/open ended contract", "On a fixed-term contract lasting 12 months or longer","On a fixed-term contract lasting less than 12 months","Temping (including supply teaching)","On a zero hours contract","Volunteering","On an internship","Other","Not known")),
+        title = "Mean Fairwork score by graduates employment basis") %>%
       hide_colorbar() %>%
       suppressWarnings()
   })
