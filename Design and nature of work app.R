@@ -18,7 +18,7 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),
       actionButton("update", "Update"),
-      selectInput("Year", "Acedemic Year", choices = unique(nature_of_work$f_zcohort), multiple = TRUE),
+      selectInput("Year", "Acedemic Year", choices = unique(nature_of_work$f_zcohort)),
       actionButton("update", "Update")
       ),
     mainPanel(
@@ -106,12 +106,12 @@ server <- function(input, output) {
   
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>%
-      group_by(f_zcohort, f_xwrk2020soc1) %>%
+      group_by( f_xwrk2020soc1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
     
     plot_ly(
       data = ndf_soc,
-      x = ~ f_zcohort,
+      x = ~ f_xwrk2020soc1,
       y = ~ mean_danow,
       color = ~ f_xwrk2020soc1,
       type = "bar",
@@ -119,7 +119,7 @@ server <- function(input, output) {
     ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
-        xaxis = list(title = "Academic Year", tickvals = c("2017/18", "2018/19")),
+        xaxis = list(title = 'SOC group', tickvals = list("Managers, directors and senior officials", "Professional occupations", "Associate professional occupations", "Administrative and secretarial occupations", "Skilled trades occupations", "Caring, leisure and other service occupations", "Sales and customer service occupations", "Process, plant and machine operatives", "Elementary occupations")),
         title = "Mean Fairwork score by graduates SOC major group"
       ) %>%
       hide_colorbar() %>%
@@ -128,12 +128,12 @@ server <- function(input, output) {
   
   output$chart2 <- renderPlotly({
     ndf_sic <- filtered_data() %>%
-      group_by(f_zcohort, f_xwrk2007sic1) %>%
+      group_by(f_xwrk2007sic1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
     
     plot_ly(
       data = ndf_sic,
-      x = ~ f_zcohort,
+      x = ~ f_xwrk2007sic1,
       y = ~ mean_danow,
       color = ~ f_xwrk2007sic1,
       type = "bar",
@@ -141,7 +141,7 @@ server <- function(input, output) {
     ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
-        xaxis = list(title = "Academic Year", tickvals = c("2017/18", "2018/19")),
+        xaxis = list(title = 'SIC Group',tickvals = list("Agriculture, forestry and fishing", "Mining and quarrying", "Manufacturing", "Electricity, gas, steam and air conditioning supply" , "Water supply; sewerage, waste management and remediation activities", "Construction" , "Wholesale and retail trade; repair of motor vehicles and motorcycles" , "Transportation and storage", "Accommodation and food service activities" , "Information and communication" , "Financial and insurance activities", "Real estate activities", "Professional, scientific and technical activities", "Administrative and support service activities", "Public administration and defence; compulsory social security", "Education", "Human health and social work activities", "Arts, entertainment and recreation", "Other service activities", "Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use", "Activities of extraterritorial organisations and bodies")),
         title = "Mean Fairwork score by graduates SIC major group"
       ) %>%
       hide_colorbar() %>%
