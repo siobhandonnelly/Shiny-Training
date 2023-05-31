@@ -147,5 +147,6 @@ server <- function(input, output) {
   })
 }
 
+#now to figure out how to upload to Git
 # Run the application
 shinyApp(ui = ui, server = server)
