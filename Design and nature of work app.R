@@ -1,6 +1,6 @@
 # create app for FVA
 # Installing the required packages
-install.packages(c("tidyverse", "readxl", "janitor", "plotly", "shiny"))
+#install.packages(c("tidyverse", "readxl", "janitor", "plotly", "shiny"))
 
 # Loading the required libraries
 library(shiny)
@@ -16,9 +16,11 @@ ui <- fluidPage(
   titlePanel("Design and Nature of Work Score"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername), multiple = TRUE),
+      selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),
+      actionButton("update", "Update"),
+      selectInput("Year", "Acedemic Year", choices = unique(nature_of_work$f_zcohort), multiple = TRUE),
       actionButton("update", "Update")
-    ),
+      ),
     mainPanel(
       plotlyOutput("chart1"),
       plotlyOutput("chart2")
@@ -36,12 +38,12 @@ server <- function(input, output) {
         f_xwrk2020soc1 = factor(f_xwrk2020soc1, levels = c(
           "Managers, directors and senior officials",
           "Professional occupations",
-          "Associate professional and technical occupations",
+          "Associate professional occupations",
           "Administrative and secretarial occupations",
           "Skilled trades occupations",
           "Caring, leisure and other service occupations",
           "Sales and customer service occupations",
-          "Process plant and machine operatives",
+          "Process, plant and machine operatives",
           "Elementary occupations"
         )),
         f_xwrk2007sic1 = factor(f_xwrk2007sic1, levels = c(
@@ -64,7 +66,7 @@ server <- function(input, output) {
           "Human health and social work activities",
           "Arts, entertainment and recreation",
           "Other service activities",
-          "Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use",
+          "Activities of households as employers; undifferentiated goods-and services-producing activities of households for own use",
           "Activities of extraterritorial organisations and bodies"
         )),
         f_xempbasis = factor(f_xempbasis, levels = c(
