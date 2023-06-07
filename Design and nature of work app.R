@@ -7,9 +7,7 @@ library(shiny)
 library(tidyverse)
 library(plotly)
 library(usethis)
-#
-# Trying to load in data with nulls dealt with
-nature_of_work <- read_csv("UKHSA dataset.csv", na = c("U", "Z0 - Missing data", "NA", "Not Known", "Not applicable", "-1", "*", ".", "", "NULL"))
+source("Data Manipulation.R")
 
 # Define UI
 ui <- fluidPage(
@@ -18,16 +16,20 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),
       actionButton("update", "Update") ,
-      selectInput("Year", "Acedemic Year", choices = unique(nature_of_work$f_zcohort)),
-      actionButton("update", "Update")
+      selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)),
+      actionButton("update2", "Update")
       ),
     mainPanel(
-      p("p creates a paragraph of text."),
+     
+      wellPanel( fluidRow(
+        column( p("p creates a paragraph of text."), width = 6),
       br(),
-      plotlyOutput("chart1"),
-      plotlyOutput("chart2"),
-      plotlyOutput("chart3")
-    )
+      column(plotlyOutput("chart1"), width = 6)
+        )),
+      wellPanel( fluidRow(
+          column(plotlyOutput("chart2"), width = 6),
+          column(plotlyOutput("chart3"), width = 6)
+   )))
   )
 )
 
@@ -35,79 +37,10 @@ ui <- fluidPage(
 server <- function(input, output) {
   filtered_data <- reactive({
     nature_of_work %>%
-      filter(f_providername %in% input$provider) %>%
-      filter(f_zcohort %in% input$Year) %>%
-      mutate(
-        f_zcohort = as.factor(f_zcohort),
-        f_xwrk2020soc1 = factor(f_xwrk2020soc1, levels = c(
-          "Managers, directors and senior officials",
-          "Professional occupations",
-          "Associate professional occupations",
-          "Administrative and secretarial occupations",
-          "Skilled trades occupations",
-          "Caring, leisure and other service occupations",
-          "Sales and customer service occupations",
-          "Process, plant and machine operatives",
-          "Elementary occupations"
-        )),
-        f_xwrk2007sic1 = factor(f_xwrk2007sic1, levels = c(
-          "Agriculture, forestry and fishing",
-          "Mining and quarrying",
-          "Manufacturing",
-          "Electricity, gas, steam and air conditioning supply",
-          "Water supply; sewerage, waste management and remediation activities",
-          "Construction",
-          "Wholesale and retail trade; repair of motor vehicles and motorcycles",
-          "Transportation and storage",
-          "Accommodation and food service activities",
-          "Information and communication",
-          "Financial and insurance activities",
-          "Real estate activities",
-          "Professional, scientific and technical activities",
-          "Administrative and support service activities",
-          "Public administration and defence; compulsory social security",
-          "Education",
-          "Human health and social work activities",
-          "Arts, entertainment and recreation",
-          "Other service activities",
-          "Activities of households as employers; undifferentiated goods-and services-producing activities of households for own use",
-          "Activities of extraterritorial organisations and bodies"
-        )),
-        f_xempbasis = factor(f_xempbasis, levels = c(
-          "On a permanent/open ended contract",
-          "On a fixed-term contract lasting 12 months or longer",
-          "On a fixed-term contract lasting less than 12 months",
-          "Temping (including supply teaching)",
-          "On a zero hours contract",
-          "Volunteering",
-          "On an internship",
-          "Other",
-          "Not known"
-        )),
-        f_providername = factor(f_providername)
-      ) %>%
-      mutate(study_mode = case_when(f_xqmode01 == "Part-time" ~ 2,
-                                    f_xqmode01 == "Full-time" ~ 1)) %>%
-      mutate(work_mean_num = case_when(f_wrkmean == "Strongly agree" ~ 5,
-                                       f_wrkmean == "Agree" ~ 4,
-                                       f_wrkmean == "Neither agree nor disagree" ~ 3,
-                                       f_wrkmean == "Disagree" ~ 2,
-                                       f_wrkmean == "Strongly disagree" ~ 1)) %>%
-      mutate(work_skills_num = case_when(f_wrkskills == "Strongly agree" ~ 5,
-                                         f_wrkskills == "Agree" ~ 4,
-                                         f_wrkskills == "Neither agree nor disagree" ~ 3,
-                                         f_wrkskills == "Disagree" ~ 2,
-                                         f_wrkskills == "Strongly disagree" ~ 1)) %>%
-      mutate(work_ontrack_num = case_when(f_wrkontrack == "Strongly agree" ~ 5,
-                                          f_wrkontrack == "Agree" ~ 4,
-                                          f_wrkontrack == "Neither agree nor disagree" ~ 3,
-                                          f_wrkontrack == "Disagree" ~ 2,
-                                          f_wrkontrack == "Strongly disagree" ~ 1)) %>%
-      mutate(danow = (work_ontrack_num + work_skills_num + work_mean_num) / 3) %>%
-      distinct(f_zanonymous, .keep_all = TRUE) %>%
-      filter(study_mode == 1 | !is.na(work_ontrack_num) | !is.na(work_skills_num) | !is.na(work_mean_num))
-  })
-  
+      filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
+      filter(f_zcohort %in% input$Year) # Allowing the data to be filtered by academic year
+      })
+  #Creating Plot 1, which is the fairwork score by graduates SOC group
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>%
       group_by( f_xwrk2020soc1) %>%
@@ -131,6 +64,7 @@ server <- function(input, output) {
       suppressWarnings()
   })
   
+  #Creating Plot 2, which is the fairwork score by graduates SIC group
   output$chart2 <- renderPlotly({
     ndf_sic <- filtered_data() %>%
       group_by(f_xwrk2007sic1) %>%
@@ -153,7 +87,7 @@ server <- function(input, output) {
       hide_colorbar() %>%
       suppressWarnings()
   })
-  
+  #Creating Plot 3, which is the fairwork score by graduates employment basis
   output$chart3 <- renderPlotly({
     ndf_f_empbasis <- filtered_data() %>%
       group_by( f_xempbasis) %>%
