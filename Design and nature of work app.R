@@ -22,6 +22,8 @@ ui <- fluidPage(
       actionButton("update", "Update")
       ),
     mainPanel(
+      p("p creates a paragraph of text."),
+      br(),
       plotlyOutput("chart1"),
       plotlyOutput("chart2"),
       plotlyOutput("chart3")
@@ -34,6 +36,7 @@ server <- function(input, output) {
   filtered_data <- reactive({
     nature_of_work %>%
       filter(f_providername %in% input$provider) %>%
+      filter(f_zcohort %in% input$Year) %>%
       mutate(
         f_zcohort = as.factor(f_zcohort),
         f_xwrk2020soc1 = factor(f_xwrk2020soc1, levels = c(
