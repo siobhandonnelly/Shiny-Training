@@ -14,17 +14,17 @@ ui <- fluidPage(
   titlePanel("Design and Nature of Work Score"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),
-      actionButton("update", "Update") ,
-      selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)),
-      actionButton("update2", "Update")
+      selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),#creating a filter that will filter the dashboard by all of the providers currently in the dataset, it is set to only allow one selection at a time, it does not allow users to view all providers at once which is something I want to code
+      actionButton("update", "Update") , # this creates an update button, not sure if this is needed
+      selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), # similar to the provider filter, this will filter the charts by the academic year
+      actionButton("update2", "Update") # this creates an update button, not sure if this is needed
       ),
     mainPanel(
      
       wellPanel( fluidRow(
-        column( p("p creates a paragraph of text."), width = 6),
+        column( p("p creates a paragraph of text."), width = 6), # this is a placeholder for text surrounding the design and nature of work score, for the landing page this will be generic text around the measure, whilst ton the secondary pages it will be more tailored to what is being shown in the charts
       br(),
-      column(plotlyOutput("chart1"), width = 6)
+      column(plotlyOutput("chart1"), width = 6) # specifying that plot 1 should be what is held in the top right hand corner of the app
         )),
       wellPanel( fluidRow(
           column(plotlyOutput("chart2"), width = 6),
@@ -42,7 +42,7 @@ server <- function(input, output) {
       })
   #Creating Plot 1, which is the fairwork score by graduates SOC group
   output$chart1 <- renderPlotly({
-    ndf_soc <- filtered_data() %>%
+    ndf_soc <- filtered_data() %>% #creating a subset of the dataframe that is grouped by SOC major group
       group_by( f_xwrk2020soc1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
     
@@ -66,7 +66,7 @@ server <- function(input, output) {
   
   #Creating Plot 2, which is the fairwork score by graduates SIC group
   output$chart2 <- renderPlotly({
-    ndf_sic <- filtered_data() %>%
+    ndf_sic <- filtered_data() %>% #creating a subset of the dataframe that is grouped by SIC major group
       group_by(f_xwrk2007sic1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
     
@@ -89,7 +89,7 @@ server <- function(input, output) {
   })
   #Creating Plot 3, which is the fairwork score by graduates employment basis
   output$chart3 <- renderPlotly({
-    ndf_f_empbasis <- filtered_data() %>%
+    ndf_f_empbasis <- filtered_data() %>% #creating a subset of the dataframe that is grouped by SIC major group
       group_by( f_xempbasis) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
     
@@ -111,6 +111,5 @@ server <- function(input, output) {
   })
 }
 
-#now to figure out how to upload to Git
 # Run the application
 shinyApp(ui = ui, server = server)
