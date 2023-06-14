@@ -29,16 +29,8 @@ ui <- fluidPage(
         tags$li(a(href = route_link("Study"), "Study")),
         tags$li(a(href = route_link("Personal_Charecteristics"), "Personal_Charecteristics"))
       ),
-      router$ui,
-      wellPanel( fluidRow(
-        column( p("p creates a paragraph of text."), width = 6), # this is a placeholder for text surrounding the design and nature of work score, for the landing page this will be generic text around the measure, whilst ton the secondary pages it will be more tailored to what is being shown in the charts
-      br(),
-      column(plotlyOutput("chart1"), width = 6) # specifying that plot 1 should be what is held in the top right hand corner of the app
-        )),
-      wellPanel( fluidRow(
-          column(plotlyOutput("chart2"), width = 6),
-          column(plotlyOutput("chart3"), width = 6)
-   )))
+      router$ui
+  )
   )
 )
 
