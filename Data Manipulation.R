@@ -6,7 +6,7 @@ library(plotly)
 
 nature_of_work <- read_csv("UKHSA dataset.csv", na = c("U", "Z0 - Missing data" ,"NA", "Not Known" ,"Not applicable", "-1","*",".", "", "NULL"))
 #Taking a look at the dataset 
-nature_of_work %>%
+nature_of_work <- nature_of_work %>%
       mutate(
         f_zcohort = as.factor(f_zcohort),
         f_xwrk2020soc1 = factor(f_xwrk2020soc1, levels = c(

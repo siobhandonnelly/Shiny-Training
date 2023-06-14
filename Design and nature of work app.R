@@ -8,11 +8,13 @@ library(tidyverse)
 library(plotly)
 library(usethis)
 source("Data Manipulation.R")
-
+source("Routing.R")
 # Define UI
 ui <- fluidPage(
   titlePanel("Design and Nature of Work Score"),
-  sidebarLayout(
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
+  ),  sidebarLayout(
     sidebarPanel(
       selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),#creating a filter that will filter the dashboard by all of the providers currently in the dataset, it is set to only allow one selection at a time, it does not allow users to view all providers at once which is something I want to code
       actionButton("update", "Update") , # this creates an update button, not sure if this is needed
@@ -20,7 +22,14 @@ ui <- fluidPage(
       actionButton("update2", "Update") # this creates an update button, not sure if this is needed
       ),
     mainPanel(
-     
+      
+      tags$ul( # creating a series of links to the other pages that I want to hold on my app
+        tags$li(a(href = route_link("/"), "Dashboard")),
+        tags$li(a(href = route_link("Work"), "Work")),
+        tags$li(a(href = route_link("Study"), "Study")),
+        tags$li(a(href = route_link("Personal_Charecteristics"), "Personal_Charecteristics"))
+      ),
+      router$ui,
       wellPanel( fluidRow(
         column( p("p creates a paragraph of text."), width = 6), # this is a placeholder for text surrounding the design and nature of work score, for the landing page this will be generic text around the measure, whilst ton the secondary pages it will be more tailored to what is being shown in the charts
       br(),
@@ -34,7 +43,7 @@ ui <- fluidPage(
 )
 
 # Define server logic
-server <- function(input, output) {
+server <- function(input, output, session) {
   filtered_data <- reactive({
     nature_of_work %>%
       filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
@@ -109,7 +118,7 @@ server <- function(input, output) {
       hide_colorbar() %>%
       suppressWarnings()
   })
+ {router$server(input, output, session)}
 }
-
 # Run the application
 shinyApp(ui = ui, server = server)
