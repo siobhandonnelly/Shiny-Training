@@ -3,8 +3,10 @@ library(shiny.router)
 
 home_page <- div(
   titlePanel("Dashboard"),
-  p("This is a dashboard page")
-)
+  column(p( verbatimTextOutput("meanOutput")), width = 6), 
+         br(),
+  column(p( verbatimTextOutput("meansalaryOutput")), width = 6
+))
 
 work_page <- div(
   titlePanel("Work"),

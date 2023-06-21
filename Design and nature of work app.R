@@ -41,6 +41,19 @@ server <- function(input, output, session) {
       filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
       filter(f_zcohort %in% input$Year) # Allowing the data to be filtered by academic year
       })
+  output$meanOutput <- renderText({
+      mean_value <- mean(nature_of_work$danow, na.rm = TRUE)   # Replace "your_variable" with the actual variable name
+    paste("Mean Fairwork Score: ", mean_value)
+  })
+  
+  output$meansalaryOutput <- renderText({
+    mean_salary <- mean(nature_of_work$f_xwrksalary, na.rm = TRUE)   # Replace "your_variable" with the actual variable name
+    paste("Mean Salary: ", mean_salary)
+  })
+  
+  
+  
+  
   #Creating Plot 1, which is the fairwork score by graduates SOC group
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>% #creating a subset of the dataframe that is grouped by SOC major group
@@ -114,6 +127,7 @@ server <- function(input, output, session) {
     ndf_f_empbasis <- filtered_data() %>% 
       group_by(f_xempbasis) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
+    ndf_f_empbasis$f_xempbasis <- factor(ndf_f_empbasis$f_xempbasis, levels = ndf_f_empbasis$f_xempbasis[order(ndf_f_empbasis$mean_danow)])
     
     plot_ly(
       data = ndf_f_empbasis,
@@ -143,6 +157,7 @@ server <- function(input, output, session) {
     ndf_f_ethnic <- filtered_data() %>% 
       group_by(f_xethnic01) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
+    ndf_f_ethnic$f_xethnic01 <- factor(ndf_f_ethnic$f_xethnic01, levels = ndf_f_ethnic$f_xethnic01[order(ndf_f_ethnic$mean_danow)])
     
     plot_ly(
       data = ndf_f_ethnic,
@@ -171,6 +186,8 @@ server <- function(input, output, session) {
     ndf_f_sex <- filtered_data() %>% 
       group_by(f_sexid) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
+    ndf_f_sex$f_sexid <- factor(ndf_f_sex$f_sexid, levels = ndf_f_sex$f_sexid[order(ndf_f_sex$mean_danow)])
+    
     
     plot_ly(
       data = ndf_f_sex,
@@ -199,6 +216,8 @@ server <- function(input, output, session) {
     ndf_f_pared <- filtered_data() %>% 
       group_by(f_pared) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
+    ndf_f_pared$f_pared <- factor(ndf_f_pared$f_pared, levels = ndf_f_pared$f_pared[order(ndf_f_pared$mean_danow)])
+    
     
     plot_ly(
       data = ndf_f_pared,
@@ -227,7 +246,9 @@ server <- function(input, output, session) {
   output$chart7 <- renderPlotly({
     ndf_f_xclass01<- filtered_data() %>% 
       group_by(f_xclass01) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
+      arrange(desc(mean_danow)) 
+    ndf_f_xclass01$f_xclass01 <- factor(ndf_f_xclass01$f_xclass01, levels = ndf_f_xclass01$f_xclass01[order(ndf_f_xclass01$mean_danow)])
     
     plot_ly(
       data = ndf_f_xclass01,
@@ -255,7 +276,9 @@ server <- function(input, output, session) {
   output$chart8 <- renderPlotly({
     ndf_f_xglev501 <- filtered_data() %>% 
       group_by(f_xglev501) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
+    arrange(desc(mean_danow)) 
+    ndf_f_xglev501$f_xglev501 <- factor(ndf_f_xglev501$f_xglev501, levels = ndf_f_xglev501$f_xglev501[order(ndf_f_xglev501$mean_danow)])
     
     plot_ly(
       data = ndf_f_xglev501,
@@ -283,7 +306,9 @@ server <- function(input, output, session) {
   output$chart9 <- renderPlotly({
     ndf_f_xjacsa01 <- filtered_data() %>% 
       group_by(f_xjacsa01) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
+    arrange(desc(mean_danow)) 
+    ndf_f_xjacsa01$f_xjacsa01 <- factor(ndf_f_xjacsa01$f_xjacsa01, levels = ndf_f_xjacsa01$f_xjacsa01[order(ndf_f_xjacsa01$mean_danow)])
     
     plot_ly(
       data = ndf_f_xjacsa01,

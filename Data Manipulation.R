@@ -54,11 +54,21 @@ nature_of_work <- nature_of_work %>%
           "Other",
           "Not known"
         )),
-        f_xclass01 = factor(f_xclass01),
+        
+        
+       f_xclass01 = factor(f_xclass01, levels = c(
+                                     "First class honours",
+                                    "Lower second class honours",
+                                    "Third class honours/Pass",
+                                    "Upper second class honours")),
         f_xglev501 = factor(f_xglev501),
         f_xjacsa01 = factor(f_xjacsa01), 
-        f_pared = factor(f_pared),
-        f_sexid = factor(f_sexid),
+        f_pared = factor(f_pared, levels = c( "Yes",
+                                              "No",
+                                              "Don't know",
+                                              "Information refused")),
+        f_sexid = factor(f_sexid, levels = c("Female",
+                                             "Male")),
         f_xethnic01 = factor(f_xethnic01), 
         f_providername = factor(f_providername)
       ) %>%
