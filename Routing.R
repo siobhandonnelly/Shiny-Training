@@ -5,8 +5,10 @@ home_page <- div(
   titlePanel("Dashboard"),
   column(p( verbatimTextOutput("meanOutput")), width = 6), 
          br(),
-  column(p( verbatimTextOutput("meansalaryOutput")), width = 6
-))
+  column(p( verbatimTextOutput("meansalaryOutput")), width = 6),
+  br(),
+  column(p( verbatimTextOutput("proportionOutput")), width = 6)
+)
 
 work_page <- div(
   titlePanel("Work"),
