@@ -3,6 +3,9 @@ library(usethis)
 library(ggplot2)
 library(dplyr)
 library(plotly)
+library(shiny)
+library(shiny)
+library(shiny.router)
 
 nature_of_work <- read_csv("UKHSA dataset.csv", na = c("U", "Z0 - Missing data" ,"NA", "Not Known" ,"Not applicable", "-1","*",".", "", "NULL"))
 #Taking a look at the dataset 
@@ -90,7 +93,12 @@ nature_of_work <- nature_of_work %>%
                                           f_wrkontrack == "Disagree" ~ 2,
                                           f_wrkontrack == "Strongly disagree" ~ 1)) %>%
       mutate(danow = (work_ontrack_num + work_skills_num + work_mean_num) / 3) %>%
+      mutate(salary = ifelse((f_xwrksalary >= 12012 & f_xwrksalary <= 80000) & f_zcohort == 2017,
+                         f_xwrksalary,
+                         ifelse((f_xwrksalary >= 10233.60 & f_xwrksalary <= 83000) & f_zcohort == 2018,
+                                f_xwrksalary,
+                                NA))) %>% 
       distinct(f_zanonymous, .keep_all = TRUE) %>%
       filter(study_mode == 1 | !is.na(work_ontrack_num) | !is.na(work_skills_num) | !is.na(work_mean_num))
-  
+
   

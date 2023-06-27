@@ -1,12 +1,4 @@
-# create app for FVA
-# Installing the required packages
-#install.packages(c("tidyverse", "readxl", "janitor", "plotly", "shiny"))
 
-# Loading the required libraries
-library(shiny)
-library(tidyverse)
-library(plotly)
-library(usethis)
 source("Data Manipulation.R")
 source("Routing.R")
 # Define UI
@@ -14,40 +6,39 @@ ui <- fluidPage(
   titlePanel("Design and Nature of Work Score"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
-  ),  sidebarLayout(
-    sidebarPanel(
-      selectInput("provider", "Provider Name", choices = unique(nature_of_work$f_providername)),#creating a filter that will filter the dashboard by all of the providers currently in the dataset, it is set to only allow one selection at a time, it does not allow users to view all providers at once which is something I want to code
-      
-      selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), # similar to the provider filter, this will filter the charts by the academic year
-      ),
+  ),  
     mainPanel(
-      
+      wellPanel(fluidRow(
+        column(selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), width = 12)
+      )),
       tags$ul( # creating a series of links to the other pages that I want to hold on my app
         tags$li(a(href = route_link("/"), "Dashboard")),
         tags$li(a(href = route_link("Work"), "Work")),
         tags$li(a(href = route_link("Study"), "Study")),
-        tags$li(a(href = route_link("Personal_characteristics"), "Personal_characteristics"))
+        tags$li(a(href = route_link("Personal_Characteristics"), "Personal Characteristics"))
       ),
       router$ui
   )
   )
-)
+
 
 # Define server logic
 server <- function(input, output, session) {
   filtered_data <- reactive({
     nature_of_work %>%
-      filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
+     # filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
       filter(f_zcohort %in% input$Year) # Allowing the data to be filtered by academic year
       })
   output$meanOutput <- renderText({
-      mean_value <- mean(nature_of_work$danow, na.rm = TRUE)   
-    paste("Mean Fairwork Score: ", mean_value)
+    mean_score <- mean(nature_of_work$danow, na.rm = TRUE)
+    mean_score_formatted <- sprintf("%.2f", mean_score)
+    paste("Mean Fairwork Score: ", mean_score_formatted)
   })
   
   output$meansalaryOutput <- renderText({
-    mean_salary <- mean(nature_of_work$f_xwrksalary, na.rm = TRUE)   
-    paste("Mean Salary: ", mean_salary)
+    mean_salary <- mean(nature_of_work$salary, na.rm = TRUE)   
+    mean_salary_formatted <- sprintf("%.2f", mean_salary)
+    paste("Mean Salary: ", mean_salary_formatted)
   })
   
   output$proportionOutput <- renderText({
@@ -79,14 +70,24 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(symbol = "circle", size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 0,
+        xend = ~mean_danow,
+        y = ~f_xwrk2020soc1,
+        yend = ~f_xwrk2020soc1,
+        color = ~f_xwrk2020soc1,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
         xaxis = list(title = 'SOC group'),
         title = "Mean Fairwork score by graduates SOC major group",
         hovermode = "closest",
         hovertemplate = paste(
-          "<b>SOC group:</b> %{x}<br>",
-          "<b>Mean Fairwork score:</b> %{y}<br>"
+          "<b>SOC group:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>"
         )
       ) %>%
       hide_colorbar() %>%
