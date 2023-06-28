@@ -14,9 +14,8 @@ home_page <- div(
   titlePanel("Dashboard"),
   wellPanel(fluidRow(
   column(div(verbatimTextOutput("meanOutput"),style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"),width = 4),
-  br(),
+  
   column(div(verbatimTextOutput("meansalaryOutput"), style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"), width = 4),
-  br(),
   column(div(verbatimTextOutput("proportionOutput"), style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"), width = 4)
 )),
 wellPanel(fluidRow(
@@ -29,7 +28,9 @@ However, the range of quantitative data about the quality of work undertaken by 
 )
   work_page <- div(
   titlePanel("Work"),
-
+  wellPanel(fluidRow(
+    column(selectInput("Sex", "Graduate Sex", choices = unique(nature_of_work$f_sexid)), width = 12)
+  )),
   wellPanel(fluidRow(
     column(p("p creates a paragraph of text."), width = 6),
     br(),

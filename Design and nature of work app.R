@@ -1,4 +1,3 @@
-
 source("Data Manipulation.R")
 source("Routing.R")
 # Define UI
@@ -21,12 +20,10 @@ ui <- fluidPage(
   )
   )
 
-
 # Define server logic
 server <- function(input, output, session) {
   filtered_data <- reactive({
     nature_of_work %>%
-     # filter(f_providername %in% input$provider) %>% #Allowing the data to be filtered by university provider
       filter(f_zcohort %in% input$Year) # Allowing the data to be filtered by academic year
       })
   output$meanOutput <- renderText({
@@ -57,7 +54,8 @@ server <- function(input, output, session) {
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>% 
       group_by(f_xwrk2020soc1) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE))  %>% 
+    filter(filtered_data$f_sexid %in% input$Sex) 
     ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
     
     plot_ly(
@@ -71,7 +69,7 @@ server <- function(input, output, session) {
       marker = list(symbol = "circle", size = 10, color = '#1F4388')
     ) %>%
       add_segments(
-        x = 0,
+        x = ~2,
         xend = ~mean_danow,
         y = ~f_xwrk2020soc1,
         yend = ~f_xwrk2020soc1,
@@ -84,13 +82,19 @@ server <- function(input, output, session) {
         yaxis = list(title = "Mean Fairwork score"),
         xaxis = list(title = 'SOC group'),
         title = "Mean Fairwork score by graduates SOC major group",
-        hovermode = "closest",
+        hovermode = "closest"
+      ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
-          "<b>SOC group:</b> %{y}<br>",
+          "<b>SOC Group:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
         )
       ) %>%
-      hide_colorbar() %>%
       suppressWarnings()
   })
   
@@ -111,17 +115,33 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(symbol = "circle", size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xwrkqualreq,
+        yend = ~f_xwrkqualreq,
+        color = ~f_xwrkqualreq,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = "Mean Fairwork score"),
         xaxis = list(title = 'Qualifications required'),
         title = "Mean Fairwork score by Qualifications required",
-        hovermode = "closest",
+        hovermode = "closest"
+      ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
           "<b>Qualifications required:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
         )
       ) %>%
-      hide_colorbar() %>%
       suppressWarnings()
   })
 
@@ -141,17 +161,33 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xempbasis,
+        yend = ~f_xempbasis,
+        color = ~f_xempbasis,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = 'Employment Basis'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
         title = "Mean Fairwork score by graduates employment basis",
-        hovermode = "closest",
+        hovermode = "closest"
+      ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
           "<b>Employment Basis:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
         )
       ) %>%
-      hide_colorbar() %>%
       suppressWarnings()
   })
   
@@ -171,17 +207,32 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xethnic01,
+        yend = ~f_xethnic01,
+        color = ~f_xethnic01,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = 'Ethnicity'),  # y-axis is Ethnicity
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
         title = "Mean Fairwork score by graduates ethnicity",
-        hovermode = "closest",
+        hovermode = "closest"
+        ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
           "<b>Ethnicity:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
-      hide_colorbar() %>%
+        )) %>%
       suppressWarnings()
   })
   output$chart5 <- renderPlotly({
@@ -201,17 +252,32 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_sexid,
+        yend = ~f_sexid,
+        color = ~f_sexid,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = 'Sex'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
         title = "Mean Fairwork score by graduates Sex",
-        hovermode = "closest",
+        hovermode = "closest"
+      ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
           "<b>Sex:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
-      hide_colorbar() %>%
+        )) %>%
       suppressWarnings()
   })
   output$chart6 <- renderPlotly({
@@ -231,17 +297,33 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_pared,
+        yend = ~f_pared,
+        color = ~f_pared,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
         yaxis = list(title = 'Parental Education'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
         title = "Mean Fairwork score by graduates Parental Education",
-        hovermode = "closest",
+        hovermode = "closest"
+      ) %>%
+      hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
         hovertemplate = paste(
           "<b>Parental Education:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
-      hide_colorbar() %>%
+        )) %>%
       suppressWarnings()
   })
   
@@ -262,17 +344,32 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xclass01,
+        yend = ~f_xclass01,
+        color = ~f_xclass01,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
-        yaxis = list(title = 'f_xclass01'),  # y-axis is Employment Basis
+        yaxis = list(title = 'Class of Degree'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates f_xclass01",
-        hovermode = "closest",
-        hovertemplate = paste(
-          "<b>f_xclass01:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
+        title = "Mean Fairwork score by graduates class of Degree",
+        hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
+        hovertemplate = paste(
+          "<b>Class of Degree:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>"
+        )) %>%
       suppressWarnings()
   })
   output$chart8 <- renderPlotly({
@@ -292,17 +389,33 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xglev501,
+        yend = ~f_xglev501,
+        color = ~f_xglev501,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
-        yaxis = list(title = 'f_xglev501'),  # y-axis is Employment Basis
+        yaxis = list(title = 'Level of study'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates f_xglev501",
-        hovermode = "closest",
-        hovertemplate = paste(
-          "<b>f_xglev501:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
+        title = "Mean Fairwork score by graduates level of study",
+        hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
+        hovertemplate = paste(
+          "<b>Level of study:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>"
+        )) %>%
       suppressWarnings()
   })
   output$chart9 <- renderPlotly({
@@ -322,17 +435,33 @@ server <- function(input, output, session) {
       showlegend = FALSE,
       marker = list(size = 10, color = '#1F4388')
     ) %>%
+      
+      add_segments(
+        x = 2,
+        xend = ~mean_danow,
+        y = ~f_xjacsa01,
+        yend = ~f_xjacsa01,
+        color = ~f_xjacsa01,
+        mode = "lines",
+        line = list(width = 1),
+        showlegend = FALSE
+      ) %>%
       layout(
-        yaxis = list(title = 'f_xjacsa01'),  # y-axis is Employment Basis
+        yaxis = list(title = 'Subject of study'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates f_xjacsa01",
-        hovermode = "closest",
-        hovertemplate = paste(
-          "<b>f_xjacsa01:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
+        title = "Mean Fairwork score by graduates subject of study",
+        hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
+      layout(
+        hoverlabel = list(
+          bgcolor = "white",
+          font = list(color = "black")
+        ),
+        hovertemplate = paste(
+          "<b>Subject of study:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>"
+        )) %>%
       suppressWarnings()
   })
   
