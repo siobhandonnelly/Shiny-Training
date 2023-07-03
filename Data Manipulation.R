@@ -8,6 +8,7 @@ library(shiny)
 library(shiny.router)
 
 nature_of_work <- read_csv("UKHSA dataset.csv", na = c("U", "Z0 - Missing data" ,"NA", "Not Known" ,"Not applicable", "-1","*",".", "", "NULL"))
+nature_of_work <- subset(nature_of_work, select = -c(f_ageonentry, f_imd, f_imd_england, f_imd_ni, f_imd_scotland, f_imd_wales, f_xinstcou01, f_zpitariff, f_zstate_marker, f_nhsorg, f_zmultipleact, zgolocation, zwrkloclaua, zwrklocgr, zwrklocn, zdomlaua, znoempband, xwrk2007sic2, xwrk2020soc3, f_xinstgou01))
 #Taking a look at the dataset 
 nature_of_work <- nature_of_work %>%
       mutate(
