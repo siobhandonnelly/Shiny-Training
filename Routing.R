@@ -1,5 +1,5 @@
-
-
+#This R file details the routing applied to the app. The routing creates a set of three pages, which you can navigate by a set of tabs at the top of the page.  As the charts are held within these sub-pages, the code regarding the page layout is held here. 
+#This next section covers the creation of the first sub-page, this will display automatically when the app is loaded
 home_page <- div(
   tags$style(
     HTML(
@@ -12,11 +12,6 @@ home_page <- div(
     )
   ),
   titlePanel("Dashboard"),
-  wellPanel(fluidRow(
-  column(div(verbatimTextOutput("meanOutput"),style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"),width = 3),
-  column(div(verbatimTextOutput("meansalaryOutput"), style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"), width = 3),
-  column(div(verbatimTextOutput("proportionOutput"), style = "background-color:  #1F4388; color: white; padding: 10px; border-radius: 5px;"), width = 6)
-)),
 wellPanel(fluidRow(
   column(p("It is recognised that achieving prosperity across the globe requires the establishment of fair and decent work for all. Over the past six years in the UK, this matter has grown in prominence both nationally and within the devolved administrations, leading to increased demand for statistics relating to employment quality. The Measuring Job Quality Working Group – formed following the publication of the Taylor Review – has identified a total of eighteen measures of job quality, which span seven broad dimensions. Data on some of these measures (e.g. career progression) are now being gathered in the UK through the Labour Force Survey, which is overseen by the Office for National Statistics.
 
@@ -25,6 +20,7 @@ One of the seven facets relates to the design of the job and the nature of the w
 However, the range of quantitative data about the quality of work undertaken by graduates is currently limited. After illustrating why HESA and the Graduate Outcomes survey are well placed to collect this information for the higher education sector, we highlight how three questions in the survey at present fit within the design/nature of work component of job quality and are also in line with the aspirations of UK higher education policy.[1] Following the recommendations of the Measuring Job Quality Working Group, we explore whether a composite variable (relating to the design/nature of work) can be formulated from these three survey questions."), width = 12)
 ))
 )
+#This section covers the second sub-page, which contains charts that display the design and nature of fair work score by work characteristics. 
   work_page <- div(
   titlePanel("Work"),
   wellPanel(fluidRow(
@@ -37,7 +33,7 @@ However, the range of quantitative data about the quality of work undertaken by 
     column(plotlyOutput("chart3"), width = 6)
   ))
 )
-
+  #This section covers the third sub-page, which contains charts that display the design and nature of fair work score by graduates study characteristics. 
 Study_page <- div(
   titlePanel("Study"),
   wellPanel(fluidRow(
@@ -51,7 +47,7 @@ Study_page <- div(
   ))
 )
 
-
+#This section dictates the link between the tabs and the associated sub-page
 router <- make_router(
   route("/", home_page),
   route("Work", work_page),

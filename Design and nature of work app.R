@@ -1,20 +1,31 @@
-source("Data Manipulation.R")
-source("Routing.R")
+source("Data Manipulation.R") #run the Data manipulation R File
+source("Routing.R") # Run the routing R  file
 # Define UI
 ui <- fluidPage(
   titlePanel("Dashboard for HESA's Design and Nature of Work Score"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "theme.css")
   ),  
-    mainPanel(
-      wellPanel(fluidRow(
-        column(selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), width = 12)
-      )),
-      wellPanel(fluidRow(
+  mainPanel(
+    wellPanel(fluidRow( #creating the main body panel, where we show the three boxes with mean figures, as well as titles.
+      column( width = 3,
+        div(tags$h3(style = "font-size: 12px;",  "Design & Nature of Work" )),
+        div(verbatimTextOutput("meanOutput"),  style = "background-color: #1F4388; color: white; padding: 10px; border-radius: 5px;")),
+      column(  width = 3, div(  tags$h3(  style = "font-size: 12px;",   "Pay & Benefits"  )),
+        div(verbatimTextOutput("meansalaryOutput"),     style = "background-color: #1F4388; color: white; padding: 10px; border-radius: 5px;")),
+      column( width = 6,div(tags$h3(style = "font-size: 12px;", "Terms of Employment" )),
+        div(verbatimTextOutput("proportionOutput"),style = "background-color: #1F4388; color: white; padding: 10px; border-radius: 5px;")
+      )
+    ))
+  ),
+        wellPanel(fluidRow( #Creating the academic year filter
+        column(selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), width = 12))),
+      wellPanel(fluidRow( #creating the filters for Sex, Ethnicity, and Disability
         column(selectInput("Sex", "Graduate Sex", choices = unique(nature_of_work$f_sexid)), width = 4),
         column(selectInput("Ethnicity", "Graduate Ethnicity", choices = unique(nature_of_work$f_xethnic01)), width = 4),
         column(selectInput("Disability", "Graduate Disability Status", choices = unique(nature_of_work$f_zstudis_marker)), width = 4)
       )),
+  
       tags$ul( # creating a series of links to the other pages that I want to hold on my app
         tags$li(a(href = route_link("/"), "Dashboard")),
         tags$li(a(href = route_link("Work"), "Work")),
@@ -22,42 +33,34 @@ ui <- fluidPage(
       ),
       router$ui
   )
-  )
+  
 
 # Define server logic
 server <- function(input, output, session) {
   filtered_data <- reactive({
     nature_of_work %>%
-    filter(f_zcohort %in% input$Year) %>% 
+    filter(f_zcohort %in% input$Year) %>%  # Allowing the data to be filtered by academic year, sex, ethnicity, and disability
     filter(f_sexid %in% input$Sex) %>% 
     filter(f_xethnic01 %in% input$Ethnicity) %>% 
     filter(f_zstudis_marker %in% input$Disability)
-    
-
-
-    
-    # Allowing the data to be filtered by academic year
-      })
-  output$meanOutput <- renderText({
+           })
+  output$meanOutput <- renderText({ #defining the Mean fairwork score output
     mean_score <- mean(nature_of_work$danow, na.rm = TRUE)
     mean_score_formatted <- sprintf("%.2f", mean_score)
     paste("Mean Fairwork Score: ", mean_score_formatted)
   })
   
-  output$meansalaryOutput <- renderText({
+  output$meansalaryOutput <- renderText({ #defining the mean salary output 
     mean_salary <- mean(nature_of_work$salary, na.rm = TRUE)   
     mean_salary_formatted <- sprintf("%.2f", mean_salary)
     paste("Mean Salary: ", mean_salary_formatted)
   })
   
-  output$proportionOutput <- renderText({
-    #nrow(nature_of_work[nature_of_work$f_xempbasis == "On a permanent/open ended contract",])
-    
+  output$proportionOutput <- renderText({ #creating an output to show the proportion of population in a  permanent/open ended contract
+
     category_counts <- table(nature_of_work$f_xempbasis)  
-    
     category_A_count <- category_counts["On a permanent/open ended contract"]  
     total_count <- sum(category_counts)
-    
     proportion_A <- category_A_count / total_count
     mean_proportion_A_formatted <- sprintf("%.2f", proportion_A)
     paste("Proportion of Graduates on a permanent/open ended contract: ", mean_proportion_A_formatted)
@@ -111,7 +114,7 @@ server <- function(input, output, session) {
       suppressWarnings()
   })
   
-  #Creating Plot 2, which is the fairwork score by graduates SIC group
+  #Creating Plot 2, which is the fairwork score by graduates qualifications required variable 
   output$chart2 <- renderPlotly({
     ndf_qualreq <- filtered_data() %>% 
       group_by(f_xwrkqualreq) %>%
@@ -162,7 +165,7 @@ server <- function(input, output, session) {
   })
 
   
- 
+ #Creating Chart 3 - Fairwork score by employment basis
   output$chart3 <- renderPlotly({
     ndf_f_empbasis <- filtered_data() %>% 
       group_by(f_xempbasis) %>%
@@ -208,7 +211,7 @@ server <- function(input, output, session) {
       ) %>%
       suppressWarnings()
   })
-
+  #Creating Chart 7 - Fairwork score by graduates class of degree
   output$chart7 <- renderPlotly({
     ndf_f_xclass01<- filtered_data() %>% 
       group_by(f_xclass01) %>%
@@ -254,6 +257,7 @@ server <- function(input, output, session) {
         )) %>%
       suppressWarnings()
   })
+  #Creating Chart 8 - Fairwork score by graduates level of degree
   output$chart8 <- renderPlotly({
     ndf_f_xglev501 <- filtered_data() %>% 
       group_by(f_xglev501) %>%
@@ -300,6 +304,7 @@ server <- function(input, output, session) {
         )) %>%
       suppressWarnings()
   })
+  #Creating Chart 9 - Fairwork score by graduates subject of degree
   output$chart9 <- renderPlotly({
     ndf_f_xjacsa01 <- filtered_data() %>% 
       group_by(f_xjacsa01) %>%
