@@ -21,13 +21,13 @@ ui <- fluidPage(
         wellPanel(fluidRow( #Creating the academic year filter
         column(selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), width = 12))),
       wellPanel(fluidRow( #creating the filters for Sex, Ethnicity, and Disability
-        column(selectInput("Sex", "Graduate Sex", choices = unique(nature_of_work$f_sexid)), width = 4),
+        column(selectInput("Sex", "Graduate Sex", choices =  unique(nature_of_work$f_sexid)), width = 4),
         column(selectInput("Ethnicity", "Graduate Ethnicity", choices = unique(nature_of_work$f_xethnic01)), width = 4),
         column(selectInput("Disability", "Graduate Disability Status", choices = unique(nature_of_work$f_zstudis_marker)), width = 4)
       )),
   
       tags$ul( # creating a series of links to the other pages that I want to hold on my app
-        tags$li(a(href = route_link("/"), "Dashboard")),
+        tags$li(a(href = route_link("/"), "Introduction")),
         tags$li(a(href = route_link("Work"), "Work")),
         tags$li(a(href = route_link("Study"), "Study"))
       ),
@@ -44,6 +44,7 @@ server <- function(input, output, session) {
     filter(f_xethnic01 %in% input$Ethnicity) %>% 
     filter(f_zstudis_marker %in% input$Disability)
            })
+
   output$meanOutput <- renderText({ #defining the Mean fairwork score output
     mean_score <- mean(nature_of_work$danow, na.rm = TRUE)
     mean_score_formatted <- sprintf("%.2f", mean_score)
@@ -72,6 +73,9 @@ server <- function(input, output, session) {
     ndf_soc <- filtered_data() %>% 
       group_by(f_xwrk2020soc1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE))
+    if (nrow(ndf_soc) < 5) {
+      return(NULL)  # Return NULL if the number of observations is less than 5
+    }
        ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
     
     plot_ly(
@@ -82,10 +86,15 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "lines",
       showlegend = FALSE,
-      marker = list(symbol = "circle", size = 10, color = '#1F4388')
+      marker = list(symbol = "circle", size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>SOC Group:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ", nrow(ndf_soc), "<br>"
+        )
     ) %>%
       add_segments(
-        x = ~4,
+        x = ~0,
         xend = ~mean_danow,
         y = ~f_xwrk2020soc1,
         yend = ~f_xwrk2020soc1,
@@ -101,16 +110,6 @@ server <- function(input, output, session) {
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>SOC Group:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
       suppressWarnings()
   })
   
@@ -132,7 +131,7 @@ server <- function(input, output, session) {
       marker = list(symbol = "circle", size = 10, color = '#1F4388')
     ) %>%
       add_segments(
-        x = 2,
+        x = 0,
         xend = ~mean_danow,
         y = ~f_xwrkqualreq,
         yend = ~f_xwrkqualreq,
@@ -183,7 +182,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388')
     ) %>%
       add_segments(
-        x = 2,
+        x = 0,
         xend = ~mean_danow,
         y = ~f_xempbasis,
         yend = ~f_xempbasis,
@@ -230,7 +229,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388')
     ) %>%
       add_segments(
-        x = 2,
+        x = 0,
         xend = ~mean_danow,
         y = ~f_xclass01,
         yend = ~f_xclass01,
@@ -277,7 +276,7 @@ server <- function(input, output, session) {
     ) %>%
       
       add_segments(
-        x = 2,
+        x = 0,
         xend = ~mean_danow,
         y = ~f_xglev501,
         yend = ~f_xglev501,
@@ -324,7 +323,7 @@ server <- function(input, output, session) {
     ) %>%
       
       add_segments(
-        x = 2,
+        x = 0,
         xend = ~mean_danow,
         y = ~f_xjacsa01,
         yend = ~f_xjacsa01,

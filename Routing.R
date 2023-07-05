@@ -11,20 +11,35 @@ home_page <- div(
       }"
     )
   ),
-  titlePanel("Dashboard"),
+  titlePanel("Introduction"),
 wellPanel(fluidRow(
-  column(p("It is recognised that achieving prosperity across the globe requires the establishment of fair and decent work for all. Over the past six years in the UK, this matter has grown in prominence both nationally and within the devolved administrations, leading to increased demand for statistics relating to employment quality. The Measuring Job Quality Working Group – formed following the publication of the Taylor Review – has identified a total of eighteen measures of job quality, which span seven broad dimensions. Data on some of these measures (e.g. career progression) are now being gathered in the UK through the Labour Force Survey, which is overseen by the Office for National Statistics.
+  column(
+    width = 12,
+  HTML("
+  <p>Creating fair and decent work opportunities is crucial for global prosperity. In the UK, there has been increased focus on the quality of employment in recent years, leading to a demand for statistics on employment quality. The Measuring Job Quality Working Group, established after the Taylor Review, has identified 18 measures of job quality across seven dimensions. Some of these measures, such as career progression, are now being collected through the Labour Force Survey overseen by the Office for National Statistics.</p>
 
-One of the seven facets relates to the design of the job and the nature of the work undertaken. This element incorporates aspects such as skill use, progression opportunities and the extent to which one’s employment provides a sense of purpose. While higher education is a devolved issue within the UK, all four nations have a shared objective in wanting graduates from all backgrounds to achieve personal fulfilment after qualifying, as well as being able to effectively utilise the skills they acquire through study in the labour market. These policy goals therefore align closely with the aforementioned element of employment quality.
+<p>One important aspect of job quality is the design of the job and the nature of the work involved. This includes factors like skill utilization, opportunities for growth, and finding purpose in one's work. While higher education is managed independently in different parts of the UK, all four nations share the objective of helping graduates from diverse backgrounds find personal fulfillment and effectively apply their acquired skills in the job market. This aligns with the goal of improving employment quality.</p>
 
-However, the range of quantitative data about the quality of work undertaken by graduates is currently limited. After illustrating why HESA and the Graduate Outcomes survey are well placed to collect this information for the higher education sector, we highlight how three questions in the survey at present fit within the design/nature of work component of job quality and are also in line with the aspirations of UK higher education policy.[1] Following the recommendations of the Measuring Job Quality Working Group, we explore whether a composite variable (relating to the design/nature of work) can be formulated from these three survey questions."), width = 12)
+<p>However, there is currently limited quantitative data on the quality of work undertaken by graduates. HESA and the Graduate Outcomes survey are well positioned to collect this information for the higher education sector. We will focus on three survey questions that relate to the design and nature of work, which also align with UK higher education policy aspirations. These questions may help formulate a composite variable representing the design and nature of work.</p>
+
+<p>For more information about our Design and Nature of Work score, please refer to our research publications available at: https://www.hesa.ac.uk/data-and-analysis/research?tid_1=876</p>"))
 ))
 )
 #This section covers the second sub-page, which contains charts that display the design and nature of fair work score by work characteristics. 
   work_page <- div(
   titlePanel("Work"),
   wellPanel(fluidRow(
-    column(p("p creates a paragraph of text."), width = 6),
+    column(
+      width = 6,
+      HTML("<p>  </p> <p>  </p> <p>  </p> <p>  </p>
+      <p>This page covers graduates' design and nature of work score, split by three work characteristics. Whether they required their qualification for their work, the standard occupational code of their job role, and their job contract length.</p>
+
+      <p>From this, we can see that when graduates are employed in job roles that require their degree, they have a higher design and nature of work score. As agreement increases, so does their score.</p>
+
+      <p>Graduates who are employed in SOC group 2 hold the highest design and nature of work score, with those in SOC group 1 coming in second. This may be linked to the qualification requirement mentioned above. Interestingly, graduates employed in SOC group 7 Caring, leisure and other caring activities, have the third highest score. This is likely due to the highly vocational nature of their work.</p>
+
+      <p>Graduates who are in permanent/open-ended contracts also have the highest design and nature of work score. This likely represents the benefit that job security offers to graduates, which is then reflected in their score. In support of this, graduates who are employed on zero-hour contracts have the worst design and nature of work score, which indicates that greater job insecurity had a negative impact on their design and nature of work score.</p>")
+    ),
     br(),
     column(plotlyOutput("chart2"), width = 6)
   )),
@@ -37,8 +52,12 @@ However, the range of quantitative data about the quality of work undertaken by 
 Study_page <- div(
   titlePanel("Study"),
   wellPanel(fluidRow(
-    column(p("This is a study page"), width = 6),
-    br(),
+    column( width = 6,
+            HTML("<p>  </p> <p>  </p> <p>  </p> <p>  </p> <p>Graduates who achieved a first class degree show the highest design and nature of work score, with those who received a third class degree having the lowest design and nature of work score. This likely ties to our previous findings regarding whether a graduate required their qualifications for their work, as it is likely that graduates who achieved a higher class of degree, are more likely to be in employment that requires their qualification. </p>
+<p>Similarly, graduates from higher level degrees, such as postgraduate research, and postgraduate taught have higher design and nature of work scores than those who graduated from first degrees or other degree types. This likely reflects those employed in more specialist employment sectors, who require specific degree attainment for employment. </p>
+<p>Highly vocational courses, such as medicine & dentistry, veterinary science, and education have the highest design and nature of work score. This indicates that aspects other than salary are impacting how graduates view their work. This can be further seen, as subject such as Law and Economics, two subjects often associated with high salaries, score lower on design and nature of work score. As these are areas that often require higher education qualifications, and offer higher salaries, it indicates that another driver is impacting the design and nature of work score of graduates.</p>")
+  ),
+  br(),
     column(plotlyOutput("chart7"), width = 6)
   )),
   wellPanel(fluidRow(
