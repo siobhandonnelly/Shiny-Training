@@ -21,9 +21,9 @@ ui <- fluidPage(
         wellPanel(fluidRow( #Creating the academic year filter
         column(selectInput("Year", "Academic Year", choices = unique(nature_of_work$f_zcohort)), width = 12))),
       wellPanel(fluidRow( #creating the filters for Sex, Ethnicity, and Disability
-        column(selectInput("Sex", "Graduate Sex", choices =  unique(nature_of_work$f_sexid)), width = 4),
-        column(selectInput("Ethnicity", "Graduate Ethnicity", choices = unique(nature_of_work$f_xethnic01)), width = 4),
-        column(selectInput("Disability", "Graduate Disability Status", choices = unique(nature_of_work$f_zstudis_marker)), width = 4)
+        column(selectInput("Sex", "Graduate Sex", choices = levels(nature_of_work$f_sexid)), width = 4),
+        column(selectInput("Ethnicity", "Graduate Ethnicity", choices = levels(nature_of_work$f_xethnic01)), width = 4),
+        column(selectInput("Disability", "Graduate Disability Status", choices = levels(nature_of_work$f_zstudis_marker)), width = 4)
       )),
   
       tags$ul( # creating a series of links to the other pages that I want to hold on my app
@@ -72,10 +72,10 @@ server <- function(input, output, session) {
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>% 
       group_by(f_xwrk2020soc1) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
-    if (nrow(ndf_soc) < 5) {
-      return(NULL)  # Return NULL if the number of observations is less than 5
-    }
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+    count_obs = n()) %>%
+      filter(count_obs >= 5) 
+    
        ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
     
     plot_ly(
@@ -90,7 +90,7 @@ server <- function(input, output, session) {
         hovertemplate = paste(
           "<b>SOC Group:</b> %{y}<br>",
           "<b>Mean Fairwork score:</b> %{x}<br>",
-          "<b>Number of Observations:</b> ", nrow(ndf_soc), "<br>"
+          "<b>Number of Observations:</b> ",  ndf_soc$count_obs, "<br>"
         )
     ) %>%
       add_segments(
@@ -117,7 +117,10 @@ server <- function(input, output, session) {
   output$chart2 <- renderPlotly({
     ndf_qualreq <- filtered_data() %>% 
       group_by(f_xwrkqualreq) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+                count_obs = n()) %>%
+      filter(count_obs >= 5) 
+  
     ndf_qualreq$f_xwrkqualreq <- factor(ndf_qualreq$f_xwrkqualreq, levels = ndf_qualreq$f_xwrkqualreq[order(ndf_qualreq$mean_danow)])
    
       plot_ly(
@@ -128,7 +131,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "markers",
       showlegend = FALSE,
-      marker = list(symbol = "circle", size = 10, color = '#1F4388')
+      marker = list(symbol = "circle", size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>Qualifications required:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ",  ndf_qualreq$count_obs, "<br>"
+        )
     ) %>%
       add_segments(
         x = 0,
@@ -149,17 +157,7 @@ server <- function(input, output, session) {
         title = "Mean Fairwork score by Qualifications required",
         hovermode = "closest"
       ) %>%
-      hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>Qualifications required:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
+      hide_colorbar()  %>%
       suppressWarnings()
   })
 
@@ -168,7 +166,10 @@ server <- function(input, output, session) {
   output$chart3 <- renderPlotly({
     ndf_f_empbasis <- filtered_data() %>% 
       group_by(f_xempbasis) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE))
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+                count_obs = n()) %>%
+      filter(count_obs >= 5) 
+    
     ndf_f_empbasis$f_xempbasis <- factor(ndf_f_empbasis$f_xempbasis, levels = ndf_f_empbasis$f_xempbasis[order(ndf_f_empbasis$mean_danow)])
     
     plot_ly(
@@ -179,7 +180,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "markers",
       showlegend = FALSE,
-      marker = list(size = 10, color = '#1F4388')
+      marker = list(size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>Employment Basis:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ",  ndf_f_empbasis$count_obs, "<br>"
+        )
     ) %>%
       add_segments(
         x = 0,
@@ -198,16 +204,6 @@ server <- function(input, output, session) {
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>Employment Basis:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )
-      ) %>%
       suppressWarnings()
   })
   #Creating Chart 7 - Fairwork score by graduates class of degree
@@ -226,7 +222,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "markers",
       showlegend = FALSE,
-      marker = list(size = 10, color = '#1F4388')
+      marker = list(size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>Class of Degree:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ",  ndf_f_xclass01$count_obs, "<br>"
+        )
     ) %>%
       add_segments(
         x = 0,
@@ -245,23 +246,17 @@ server <- function(input, output, session) {
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>Class of Degree:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )) %>%
+      
       suppressWarnings()
   })
   #Creating Chart 8 - Fairwork score by graduates level of degree
   output$chart8 <- renderPlotly({
     ndf_f_xglev501 <- filtered_data() %>% 
       group_by(f_xglev501) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
-    arrange(desc(mean_danow)) 
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+                count_obs = n()) %>%
+      filter(count_obs >= 5) 
+
     ndf_f_xglev501$f_xglev501 <- factor(ndf_f_xglev501$f_xglev501, levels = ndf_f_xglev501$f_xglev501[order(ndf_f_xglev501$mean_danow)])
     
     plot_ly(
@@ -272,7 +267,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "markers",
       showlegend = FALSE,
-      marker = list(size = 10, color = '#1F4388')
+      marker = list(size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>Level of study:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ",  ndf_f_xglev501$count_obs, "<br>"
+        )
     ) %>%
       
       add_segments(
@@ -292,23 +292,17 @@ server <- function(input, output, session) {
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>Level of study:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )) %>%
+      
       suppressWarnings()
   })
   #Creating Chart 9 - Fairwork score by graduates subject of degree
   output$chart9 <- renderPlotly({
     ndf_f_xjacsa01 <- filtered_data() %>% 
       group_by(f_xjacsa01) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
-    arrange(desc(mean_danow)) 
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+                count_obs = n()) %>%
+      filter(count_obs >= 5) 
+    
     ndf_f_xjacsa01$f_xjacsa01 <- factor(ndf_f_xjacsa01$f_xjacsa01, levels = ndf_f_xjacsa01$f_xjacsa01[order(ndf_f_xjacsa01$mean_danow)])
     
     plot_ly(
@@ -319,7 +313,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "markers",
       showlegend = FALSE,
-      marker = list(size = 10, color = '#1F4388')
+      marker = list(size = 10, color = '#1F4388'),
+        hovertemplate = paste(
+          "<b>Subject of study:</b> %{y}<br>",
+          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Number of Observations:</b> ",  ndf_f_xjacsa01$count_obs, "<br>"
+        )
     ) %>%
       
       add_segments(
@@ -339,15 +338,7 @@ server <- function(input, output, session) {
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
-      layout(
-        hoverlabel = list(
-          bgcolor = "white",
-          font = list(color = "black")
-        ),
-        hovertemplate = paste(
-          "<b>Subject of study:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>"
-        )) %>%
+      
       suppressWarnings()
   })
   

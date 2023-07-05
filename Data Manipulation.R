@@ -10,9 +10,9 @@ library(shiny)
 library(shiny.router)
 #Loading in the dataset, we recode missing data items to na, we then restrict our data set by removing variables that we are not using. This is done to improve the speed of the app. 
 nature_of_work <- read_csv("UKHSA dataset.csv", na = c("U", "Z0 - Missing data" ,"NA", "Not Known" ,"Not applicable", "-1","*",".", "", "NULL"))
-nature_of_work <- subset(nature_of_work, select = -c(f_ageonentry, f_imd, f_imd_england, f_imd_ni, f_imd_scotland, f_imd_wales, f_xinstcou01, f_zpitariff, f_zstate_marker, f_nhsorg, f_zmultipleact, zgolocation, zwrkloclaua, zwrklocgr, zwrklocn, zdomlaua, znoempband, xwrk2007sic2, xwrk2020soc3, f_xinstgou01))
+nature_of_work <- subset(nature_of_work, select = -c(f_ageonentry, f_mimpact, f_imd, census, f_xwrkjobrsn, f_xwrk2007sic1, f_imd_england, f_imd_ni, f_imd_scotland, f_imd_wales, f_xinstcou01, f_zpitariff, f_zstate_marker, f_nhsorg, f_zmultipleact, zgolocation, zwrkloclaua, zwrklocgr, zwrklocn, zdomlaua, znoempband, xwrk2007sic2, xwrk2020soc3, f_xinstgou01))
 #Here we begin manipulating our dataset
-nature_of_work <- nature_of_work %>%
+nature_of_work_1 <- nature_of_work %>%
       mutate(
         f_zcohort = as.factor(f_zcohort), #Here we change the f_zcohort variable to a factor variable
         f_xwrk2020soc1 = factor(f_xwrk2020soc1, levels = c( #Here we change the f_xwrk2020soc1 variable to a factor variable, and specify the levels, this is so that the variables display in the correct order
@@ -25,29 +25,6 @@ nature_of_work <- nature_of_work %>%
           "Sales and customer service occupations",
           "Process, plant and machine operatives",
           "Elementary occupations"
-        )),
-        f_xwrk2007sic1 = factor(f_xwrk2007sic1, levels = c( #Here we change the f_xwrk2007sic1 variable to a factor variable, and specify the levels, this is so that the variables display in the correct order
-          "Agriculture, forestry and fishing",
-          "Mining and quarrying",
-          "Manufacturing",
-          "Electricity, gas, steam and air conditioning supply",
-          "Water supply; sewerage, waste management and remediation activities",
-          "Construction",
-          "Wholesale and retail trade; repair of motor vehicles and motorcycles",
-          "Transportation and storage",
-          "Accommodation and food service activities",
-          "Information and communication",
-          "Financial and insurance activities",
-          "Real estate activities",
-          "Professional, scientific and technical activities",
-          "Administrative and support service activities",
-          "Public administration and defence; compulsory social security",
-          "Education",
-          "Human health and social work activities",
-          "Arts, entertainment and recreation",
-          "Other service activities",
-          "Activities of households as employers; undifferentiated goods-and services-producing activities of households for own use",
-          "Activities of extraterritorial organisations and bodies"
         )),
         f_xempbasis = factor(f_xempbasis, levels = c(  #Here we change the f_xempbasis variable to a factor variable, and specify the levels, this is so that the variables display in the correct order
           "On a permanent/open ended contract",
@@ -71,9 +48,26 @@ nature_of_work <- nature_of_work %>%
                                               "No",
                                               "Don't know",
                                               "Information refused")),
-        f_sexid = factor(f_sexid, levels = c("Female", #Here we change the f_sexid variable to a factor variable, and specify the levels, this is so that the variables display in the correct order
-                                             "Male")),
-        f_xethnic01 = factor(f_xethnic01),  #Here we change the f_xethnic01 variable to a factor variable
+        f_sexid = factor(f_sexid, levels = c("All",
+                                             "Female", #Here we change the f_sexid variable to a factor variable, and specify the levels, this is so that the variables display in the correct order
+                                             "Male"
+                                             )),
+       f_zstudis_marker = factor (f_zstudis_marker, levels = c("All",
+         "No known disability (including unknowns)",
+         "Known disability"  )),
+        f_xethnic01 = factor(f_xethnic01, levels = c(
+          "All",
+          "White",
+          "Other Black background",
+          "Other Asian background",
+          "Other (including mixed)",
+          "Ethnicity not known",
+          "Chinese",
+          "Black or Black British - Caribbean",
+          "Black or Black British - African",
+          "Asian or Asian British - Pakistani",
+          "Asian or Asian British - Indian",
+          "Asian or Asian British - Bangladeshi")),  #Here we change the f_xethnic01 variable to a factor variable
         f_providername = factor(f_providername) #Here we change the f_providername variable to a factor variable
       ) %>%
   
@@ -103,4 +97,29 @@ nature_of_work <- nature_of_work %>%
       distinct(f_zanonymous, .keep_all = TRUE) %>% #resticting the dataset to show only distintct individuals
       filter(study_mode == 1 | !is.na(work_ontrack_num) | !is.na(work_skills_num) | !is.na(work_mean_num)) #subsetting the dataset to full time graduates who answered all the GV questions
 
-  
+nature_of_work_2 <- nature_of_work_1 %>% 
+  mutate( f_sexid = "All") 
+nature_of_work_3 <- nature_of_work_1 %>% 
+  mutate (f_xethnic01 = "All")
+nature_of_work_4 <- nature_of_work_1 %>% 
+  mutate (f_zstudis_marker = "All")
+
+nature_of_work_5 <- nature_of_work_1 %>% 
+  mutate( f_sexid = "All") %>% 
+  mutate (f_xethnic01 = "All")
+
+nature_of_work_6 <- nature_of_work_1 %>% 
+  mutate( f_sexid = "All") %>% 
+  mutate (f_zstudis_marker = "All")
+
+nature_of_work_7 <- nature_of_work_1 %>% 
+  mutate (f_xethnic01 = "All") %>% 
+  mutate (f_zstudis_marker = "All")
+
+nature_of_work_8 <- nature_of_work_1 %>% 
+  mutate (f_xethnic01 = "All") %>% 
+  mutate (f_zstudis_marker = "All") %>% 
+  mutate( f_sexid = "All")
+
+nature_of_work <- rbind(nature_of_work_1,nature_of_work_2,nature_of_work_3,nature_of_work_4,nature_of_work_5,nature_of_work_6,nature_of_work_7, nature_of_work_8 )
+rm(nature_of_work_1,nature_of_work_2,nature_of_work_3,nature_of_work_4,nature_of_work_5,nature_of_work_6,nature_of_work_7, nature_of_work_8 )
