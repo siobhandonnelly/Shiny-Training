@@ -53,7 +53,7 @@ server <- function(input, output, session) {
   
   output$meansalaryOutput <- renderText({ #defining the mean salary output 
     mean_salary <- mean(nature_of_work$salary, na.rm = TRUE)   
-    mean_salary_formatted <- sprintf("%.2f", mean_salary)
+    mean_salary_formatted <- paste("£", format(round(mean_salary), big.mark = ",", decimal.mark = ".", scientific = FALSE))
     paste("Mean Salary: ", mean_salary_formatted)
   })
   
@@ -74,9 +74,10 @@ server <- function(input, output, session) {
       group_by(f_xwrk2020soc1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
     count_obs = n()) %>%
-      filter(count_obs >= 5) 
-    
-       ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
+     
+    filter(count_obs >= 5) 
+    ndf_soc$count_obs <- round(ndf_soc$count_obs / 5) * 5
+    ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
     
     plot_ly(
       data = ndf_soc,
@@ -120,7 +121,7 @@ server <- function(input, output, session) {
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
       filter(count_obs >= 5) 
-  
+    ndf_qualreq$count_obs <- round(ndf_qualreq$count_obs / 5) * 5
     ndf_qualreq$f_xwrkqualreq <- factor(ndf_qualreq$f_xwrkqualreq, levels = ndf_qualreq$f_xwrkqualreq[order(ndf_qualreq$mean_danow)])
    
       plot_ly(
@@ -169,7 +170,7 @@ server <- function(input, output, session) {
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
       filter(count_obs >= 5) 
-    
+    ndf_f_empbasis$count_obs <- round(ndf_f_empbasis$count_obs / 5) * 5
     ndf_f_empbasis$f_xempbasis <- factor(ndf_f_empbasis$f_xempbasis, levels = ndf_f_empbasis$f_xempbasis[order(ndf_f_empbasis$mean_danow)])
     
     plot_ly(
@@ -210,8 +211,11 @@ server <- function(input, output, session) {
   output$chart7 <- renderPlotly({
     ndf_f_xclass01<- filtered_data() %>% 
       group_by(f_xclass01) %>%
-      summarise(mean_danow = mean(danow, na.rm = TRUE)) %>% 
+      summarise(mean_danow = mean(danow, na.rm = TRUE),  
+    count_obs = n()) %>%
+    filter(count_obs >= 5)  %>% 
       arrange(desc(mean_danow)) 
+    ndf_f_xclass01$count_obs <- round(ndf_f_xclass01$count_obs / 5) * 5
     ndf_f_xclass01$f_xclass01 <- factor(ndf_f_xclass01$f_xclass01, levels = ndf_f_xclass01$f_xclass01[order(ndf_f_xclass01$mean_danow)])
     
     plot_ly(
@@ -242,7 +246,7 @@ server <- function(input, output, session) {
       layout(
         yaxis = list(title = 'Class of Degree'),  # y-axis is Employment Basis
         xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates class of Degree",
+        title = "Mean Fairwork score by graduates Class of Degree",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
@@ -256,7 +260,7 @@ server <- function(input, output, session) {
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
       filter(count_obs >= 5) 
-
+    ndf_f_xglev501$count_obs <- round(ndf_f_xglev501$count_obs / 5) * 5
     ndf_f_xglev501$f_xglev501 <- factor(ndf_f_xglev501$f_xglev501, levels = ndf_f_xglev501$f_xglev501[order(ndf_f_xglev501$mean_danow)])
     
     plot_ly(
@@ -302,7 +306,7 @@ server <- function(input, output, session) {
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
       filter(count_obs >= 5) 
-    
+    ndf_f_xjacsa01$count_obs <- round(ndf_f_xjacsa01$count_obs / 5) * 5
     ndf_f_xjacsa01$f_xjacsa01 <- factor(ndf_f_xjacsa01$f_xjacsa01, levels = ndf_f_xjacsa01$f_xjacsa01[order(ndf_f_xjacsa01$mean_danow)])
     
     plot_ly(
