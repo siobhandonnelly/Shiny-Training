@@ -45,10 +45,10 @@ server <- function(input, output, session) {
     filter(f_zstudis_marker %in% input$Disability)
            })
 
-  output$meanOutput <- renderText({ #defining the Mean fairwork score output
+  output$meanOutput <- renderText({ #defining the Mean Design and Nature of Work Score output
     mean_score <- mean(nature_of_work$danow, na.rm = TRUE)
     mean_score_formatted <- sprintf("%.2f", mean_score)
-    paste("Mean Fairwork Score: ", mean_score_formatted)
+    paste("Mean Design and Nature of Work Score: ", mean_score_formatted)
   })
   
   output$meansalaryOutput <- renderText({ #defining the mean salary output 
@@ -68,14 +68,14 @@ server <- function(input, output, session) {
   })
   
   
-  #Creating Plot 1, which is the fairwork score by graduates SOC group
+  #Creating Plot 1, which is the Design and Nature of Work Score by graduates SOC group
   output$chart1 <- renderPlotly({
     ndf_soc <- filtered_data() %>% 
       group_by(f_xwrk2020soc1) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
     count_obs = n()) %>%
      
-    filter(count_obs >= 5) 
+    filter(count_obs >= 8) 
     ndf_soc$count_obs <- round(ndf_soc$count_obs / 5) * 5
     ndf_soc$f_xwrk2020soc1 <- factor(ndf_soc$f_xwrk2020soc1, levels = ndf_soc$f_xwrk2020soc1[order(ndf_soc$mean_danow)])
     
@@ -90,7 +90,7 @@ server <- function(input, output, session) {
       marker = list(symbol = "circle", size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>SOC Group:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_soc$count_obs, "<br>"
         )
     ) %>%
@@ -106,21 +106,21 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         yaxis = list(title = 'SOC group'),
-        xaxis = list(title ="Mean Fairwork score" ),
-        title = "Mean Fairwork score by graduates SOC major group",
+        xaxis = list(title ="Mean Design and Nature of Work Score" ),
+        title = "Mean Design and Nature of Work Score by graduates SOC major group",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
       suppressWarnings()
   })
   
-  #Creating Plot 2, which is the fairwork score by graduates qualifications required variable 
+  #Creating Plot 2, which is the Design and Nature of Work Score by graduates qualifications required variable 
   output$chart2 <- renderPlotly({
     ndf_qualreq <- filtered_data() %>% 
       group_by(f_xwrkqualreq) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
-      filter(count_obs >= 5) 
+      filter(count_obs >= 8) 
     ndf_qualreq$count_obs <- round(ndf_qualreq$count_obs / 5) * 5
     ndf_qualreq$f_xwrkqualreq <- factor(ndf_qualreq$f_xwrkqualreq, levels = ndf_qualreq$f_xwrkqualreq[order(ndf_qualreq$mean_danow)])
    
@@ -135,7 +135,7 @@ server <- function(input, output, session) {
       marker = list(symbol = "circle", size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>Qualifications required:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_qualreq$count_obs, "<br>"
         )
     ) %>%
@@ -154,8 +154,8 @@ server <- function(input, output, session) {
                          ticktext = list("Yes: both the level and subject of qualification …", " Yes: the level of qualification …", " Yes: the subject of the qualification …", " Yes: Not a requirement, it did give me an advantage..", " No: the qualification was not required", " Don't know"), 
     tickvals = list("Yes: both the level and subject of qualification was a formal requirement","Yes: the level of qualification was a formal requirement", "Yes: the subject of the qualification was a formal requirement", "Yes: while the qualification was not a formal requirement it did give me an advantage","No: the qualification was not required", "Don't know"),
     tickmode = "array"),
-         xaxis = list(title = "Mean Fairwork score"),
-        title = "Mean Fairwork score by Qualifications required",
+         xaxis = list(title = "Mean Design and Nature of Work Score"),
+        title = "Mean Design and Nature of Work Score by Qualifications required",
         hovermode = "closest"
       ) %>%
       hide_colorbar()  %>%
@@ -163,13 +163,13 @@ server <- function(input, output, session) {
   })
 
   
- #Creating Chart 3 - Fairwork score by employment basis
+ #Creating Chart 3 - Design and Nature of Work Score by employment basis
   output$chart3 <- renderPlotly({
     ndf_f_empbasis <- filtered_data() %>% 
       group_by(f_xempbasis) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
-      filter(count_obs >= 5) 
+      filter(count_obs >= 8) 
     ndf_f_empbasis$count_obs <- round(ndf_f_empbasis$count_obs / 5) * 5
     ndf_f_empbasis$f_xempbasis <- factor(ndf_f_empbasis$f_xempbasis, levels = ndf_f_empbasis$f_xempbasis[order(ndf_f_empbasis$mean_danow)])
     
@@ -184,7 +184,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>Employment Basis:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_f_empbasis$count_obs, "<br>"
         )
     ) %>%
@@ -200,20 +200,20 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         yaxis = list(title = 'Employment Basis'),  # y-axis is Employment Basis
-        xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates employment basis",
+        xaxis = list(title = 'Mean Design and Nature of Work Score'),  # x-axis is Mean Design and Nature of Work Score
+        title = "Mean Design and Nature of Work Score by graduates employment basis",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
       suppressWarnings()
   })
-  #Creating Chart 7 - Fairwork score by graduates class of degree
+  #Creating Chart 7 - Design and Nature of Work Score by graduates class of degree
   output$chart7 <- renderPlotly({
     ndf_f_xclass01<- filtered_data() %>% 
       group_by(f_xclass01) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
     count_obs = n()) %>%
-    filter(count_obs >= 5)  %>% 
+    filter(count_obs >= 8)  %>% 
       arrange(desc(mean_danow)) 
     ndf_f_xclass01$count_obs <- round(ndf_f_xclass01$count_obs / 5) * 5
     ndf_f_xclass01$f_xclass01 <- factor(ndf_f_xclass01$f_xclass01, levels = ndf_f_xclass01$f_xclass01[order(ndf_f_xclass01$mean_danow)])
@@ -229,7 +229,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>Class of Degree:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_f_xclass01$count_obs, "<br>"
         )
     ) %>%
@@ -245,21 +245,21 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         yaxis = list(title = 'Class of Degree'),  # y-axis is Employment Basis
-        xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates Class of Degree",
+        xaxis = list(title = 'Mean Design and Nature of Work Score'),  # x-axis is Mean Design and Nature of Work Score
+        title = "Mean Design and Nature of Work Score by graduates Class of Degree",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
       
       suppressWarnings()
   })
-  #Creating Chart 8 - Fairwork score by graduates level of degree
+  #Creating Chart 8 - Design and Nature of Work Score by graduates level of degree
   output$chart8 <- renderPlotly({
     ndf_f_xglev501 <- filtered_data() %>% 
       group_by(f_xglev501) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
-      filter(count_obs >= 5) 
+      filter(count_obs >= 8) 
     ndf_f_xglev501$count_obs <- round(ndf_f_xglev501$count_obs / 5) * 5
     ndf_f_xglev501$f_xglev501 <- factor(ndf_f_xglev501$f_xglev501, levels = ndf_f_xglev501$f_xglev501[order(ndf_f_xglev501$mean_danow)])
     
@@ -274,7 +274,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>Level of study:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_f_xglev501$count_obs, "<br>"
         )
     ) %>%
@@ -291,21 +291,21 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         yaxis = list(title = 'Level of study'),  # y-axis is Employment Basis
-        xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates level of study",
+        xaxis = list(title = 'Mean Design and Nature of Work Score'),  # x-axis is Mean Design and Nature of Work Score
+        title = "Mean Design and Nature of Work Score by graduates level of study",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
       
       suppressWarnings()
   })
-  #Creating Chart 9 - Fairwork score by graduates subject of degree
+  #Creating Chart 9 - Design and Nature of Work Score by graduates subject of degree
   output$chart9 <- renderPlotly({
     ndf_f_xjacsa01 <- filtered_data() %>% 
       group_by(f_xjacsa01) %>%
       summarise(mean_danow = mean(danow, na.rm = TRUE),  
                 count_obs = n()) %>%
-      filter(count_obs >= 5) 
+      filter(count_obs >= 8) 
     ndf_f_xjacsa01$count_obs <- round(ndf_f_xjacsa01$count_obs / 5) * 5
     ndf_f_xjacsa01$f_xjacsa01 <- factor(ndf_f_xjacsa01$f_xjacsa01, levels = ndf_f_xjacsa01$f_xjacsa01[order(ndf_f_xjacsa01$mean_danow)])
     
@@ -320,7 +320,7 @@ server <- function(input, output, session) {
       marker = list(size = 10, color = '#1F4388'),
         hovertemplate = paste(
           "<b>Subject of study:</b> %{y}<br>",
-          "<b>Mean Fairwork score:</b> %{x}<br>",
+          "<b>Mean Design and Nature of Work Score:</b> %{x}<br>",
           "<b>Number of Observations:</b> ",  ndf_f_xjacsa01$count_obs, "<br>"
         )
     ) %>%
@@ -337,8 +337,8 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         yaxis = list(title = 'Subject of study'),  # y-axis is Employment Basis
-        xaxis = list(title = 'Mean Fairwork score'),  # x-axis is Mean Fairwork score
-        title = "Mean Fairwork score by graduates subject of study",
+        xaxis = list(title = 'Mean Design and Nature of Work Score'),  # x-axis is Mean Design and Nature of Work Score
+        title = "Mean Design and Nature of Work Score by graduates subject of study",
         hovermode = "closest"
       ) %>%
       hide_colorbar() %>%
