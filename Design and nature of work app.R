@@ -114,7 +114,7 @@ server <- function(input, output, session) {
       suppressWarnings()
   })
   
-  #Creating Plot 2, which is the Design and Nature of Work Score by graduates qualifications required variable 
+  #Creating Plot 2, which is the Design and Nature of Work Score by graduates  qualifications required variable 
   output$chart2 <- renderPlotly({
     ndf_qualreq <- filtered_data() %>% 
       group_by(f_xwrkqualreq) %>%
